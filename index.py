@@ -16,7 +16,7 @@ test = 0
 SB = 0
 while SB==0:
   # 4-1. FPS 설정 
-  clock.tick(10)
+  clock.tick(2)
     # 4-2. 각종 입력 감지 
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
