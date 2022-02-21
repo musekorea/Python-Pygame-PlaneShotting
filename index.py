@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # 1. pygame 초기화 
 pygame.init()
@@ -42,6 +43,7 @@ move_left=False
 missile_on = False
 
 missile_list = []
+enemy_list = []
 
 def create_missile():
   missile = Game_obj()
@@ -51,6 +53,16 @@ def create_missile():
   missile.y = plane.y-missile.size_y-3
   missile.move = 8
   missile_list.append(missile)
+
+def create_enemmy():
+  enemy = Game_obj()
+  enemy.put_img("./images/enemy_1.png")
+  enemy.change_size(45,45)
+  print(random.randrange(0,100))
+  enemy.x = random.randrange(0, (size[0]-enemy.size_x))
+  enemy.y = 10
+  enemy.move = 2
+  enemy_list.append(enemy)
 
 # 4. 메인 이벤트 
 shut_down = 0
@@ -62,12 +74,11 @@ while shut_down==0:
     if event.type == pygame.QUIT:
       shut_down = 1
     if event.type == pygame.KEYDOWN: 
-      if event.key == pygame.K_RIGHT: #1073741903
+      if event.key == pygame.K_RIGHT: 
         move_right=True
-      elif event.key ==1073741904: #1073741904
+      elif event.key ==1073741904:
         move_left=True
-      elif event.key == pygame.K_SPACE: #missile on
-        print("down")
+      elif event.key == pygame.K_SPACE: 
         create_missile()
 
     if event.type == pygame.KEYUP:
@@ -76,8 +87,9 @@ while shut_down==0:
       elif event.key ==pygame.K_LEFT:
         move_left = False
       elif event.key == pygame.K_SPACE:
-        print("up")
-        missile_on=False
+        pass
+
+
     
   # 4-3. 입력, 시간에 따른 변화 
   if move_right==True:
@@ -88,25 +100,24 @@ while shut_down==0:
     plane.x = plane.x-plane.move
     if plane.x<0:
       plane.x = 0
+  if random.random()>0.98: # Enemy Create Ratio
+    print("create")
+    create_enemmy()
 
   # 4-4. 그리기
   screen.fill(black)
   plane.show()
-  for item in missile_list:
-    item.y = item.y-item.move
-    item.show()
-    print(item.y)
-    if item.y<0:
-      print("사라짐")
-      missile_list.remove(item)
-      print(item)
-      print(len(missile_list))
+  for bullet in missile_list:
+    bullet.y = bullet.y-bullet.move
+    bullet.show()
+    if bullet.y<0:
+      missile_list.remove(bullet)
 
- 
-  
-  
-
-
+  for enemy in enemy_list:
+    enemy.y = enemy.y+enemy.move
+    enemy.show()
+    if enemy.y>size[1]:
+      enemy_list.remove(enemy)
   
   # 4-5. 렌더링 
   pygame.display.flip()
