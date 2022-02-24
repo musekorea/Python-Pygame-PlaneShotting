@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 # 1. pygame 초기화 
 pygame.init()
@@ -13,6 +14,7 @@ pygame.display.set_caption(title)
 clock = pygame.time.Clock()
 black = (0,0,0)
 white = (255,255,255)
+red = (255,0,0)
 
 class Game_obj:
   def __init__(self):
@@ -60,15 +62,22 @@ def create_enemmy():
   enemy.change_size(45,45)
   enemy.x = random.randrange(0, (size[0]-enemy.size_x))
   enemy.y = 10
-  enemy.move = 1
+  enemy.move = 2  #Enemy Speed
   enemy_list.append(enemy)
 
-def crash(enemy, missile):
+def enemy_missile_crash(enemy, missile):
   if missile.y-enemy.y+enemy.size_y<1:
     if missile.x+missile.size_x-3>enemy.x and enemy.x+enemy.size_x-3>=missile.x:
       return True
   else:
     return False
+    
+def enemy_plane_crash(enemy, plane):
+  if plane.y <=(enemy.y+enemy.size_y-5)<=plane.y+plane.size_y:
+    if enemy.x+enemy.size_x-5>plane.x and plane.x + plane.size_x-5 >enemy.x:
+      return "gameover"
+  else:
+    return
 
 
 # 4. 메인 이벤트 
@@ -129,12 +138,34 @@ while shut_down==0:
     for j, missile in enumerate(missile_list):
       e = enemy_list[i]
       m = missile_list[j]
-      if crash(e,m)==True:
+      if enemy_missile_crash(e,m)==True:
+        e.put_img("./images/explosion.png")
+        e.change_size(80,80)
+        e.x = e.x-10
+        e.y = e.y-20
+        e.show()
+        pygame.display.flip()
         enemy_list.remove(e)
         missile_list.remove(m)
         break
       else:
         pass
+  
+  for i , enemy in enumerate(enemy_list):
+    e = enemy_list[i]
+    p = plane
+    if enemy_plane_crash(e,p)=="gameover":
+      plane.put_img("./images/explosion.png")
+      plane.change_size(80,80)
+      plane.x = plane.x-20
+      plane.y = plane.y-20
+      plane.show()
+      pygame.display.flip()
+      pygame.time.wait(3000)
+      shut_down=1
+    else:
+      print("play")
+      pass
       
   
   # 4-5. 렌더링 
