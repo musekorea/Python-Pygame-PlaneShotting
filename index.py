@@ -1,6 +1,8 @@
 import pygame
 import random
-import time
+import datetime
+from color import colors
+
 
 # 1. pygame 초기화 
 pygame.init()
@@ -12,13 +14,13 @@ pygame.display.set_caption(title)
 
 # 3. 게임 내 필요한 설정
 clock = pygame.time.Clock()
-black = (0,0,0)
-white = (255,255,255)
-red = (255,0,0)
+
+kill = 0
+lost = 0
 
 class Game_obj:
   def __init__(self):
-    self.x = 0 #좌표
+    self.x = 0 
     self.y = 0
     self.move = 0
   def put_img(self, path):
@@ -62,7 +64,7 @@ def create_enemmy():
   enemy.change_size(45,45)
   enemy.x = random.randrange(0, (size[0]-enemy.size_x))
   enemy.y = 10
-  enemy.move = 2  #Enemy Speed
+  enemy.move = 3  #Enemy Speed
   enemy_list.append(enemy)
 
 def enemy_missile_crash(enemy, missile):
@@ -79,9 +81,38 @@ def enemy_plane_crash(enemy, plane):
   else:
     return
 
+# 3-1 시작 화면 
+start = 0
+start_image = Game_obj()
+start_image.put_img("./images/codeme.png")
+start_image.change_size(300,300)
+start_image.x = 50
+start_image.y = 100
+start_image.show()
+while start==0:
+  clock.tick(60)
+  screen.fill(colors["black"])     
+  start_image.show()
+  font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20 )
+  text_start = font.render("PRESS SPACEBAR TO START", True, colors["yellow"]) 
+  screen.blit(text_start, (60,680))
+  font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 25 )
+  text_start = font.render("PYTHON SHOOTING GAME", True, colors["green"]) 
+  screen.blit(text_start, (38,410))
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      pygame.quit()
+    if event.type == pygame.KEYDOWN:
+      if event.key == 32: #space bar
+        print("ok") 
+        start=1
+  pygame.display.flip()
+
 
 # 4. 메인 이벤트 
 shut_down = 0
+time_start = datetime.datetime.now() #시작한 시간 
+font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20 )
 while shut_down==0:
   # 4-1. FPS 설정 
   clock.tick(60)
@@ -116,23 +147,41 @@ while shut_down==0:
     plane.x = plane.x-plane.move
     if plane.x<0:
       plane.x = 0
-  if random.random()>0.99: # Enemy Create Ratio
+  if random.random()>0.98: # Enemy Create Ratio
     create_enemmy()
 
   # 4-4. 그리기
-  screen.fill(black)
+  screen.fill(colors["black"])  
   plane.show()
+
+  # 점수 표시 
+
+  text_kill = font.render(f"Kill : {kill}", True, colors["green"])  
+  text_lost = font.render(f"Lost : {lost}", True, colors["red"])
+  screen.blit(text_kill, (10,5))
+  screen.blit(text_lost, (80,5))
+
+  # 시간 표시
+  time_now = datetime.datetime.now()
+  delta_time = str(time_now-time_start)[2:7]
+  text_time = font.render(f"Playing Time : {delta_time}", True, colors["yellow"])  
+  screen.blit(text_time, (180,5))
+
+
   for bullet in missile_list:
     bullet.y = bullet.y-bullet.move
     bullet.show()
     if bullet.y<0:
       missile_list.remove(bullet)
+      break
 
   for enemy in enemy_list:
     enemy.y = enemy.y+enemy.move
     enemy.show()
     if enemy.y>size[1]:
       enemy_list.remove(enemy)
+      lost = lost+1   # Score -
+      break
 
   for i, enemy in enumerate(enemy_list):
     for j, missile in enumerate(missile_list):
@@ -147,6 +196,7 @@ while shut_down==0:
         pygame.display.flip()
         enemy_list.remove(e)
         missile_list.remove(m)
+        kill = kill+1   # Score +
         break
       else:
         pass
@@ -161,10 +211,10 @@ while shut_down==0:
       plane.y = plane.y-20
       plane.show()
       pygame.display.flip()
-      pygame.time.wait(3000)
+      pygame.time.wait(3000) 
       shut_down=1
+      break
     else:
-      print("play")
       pass
       
   
