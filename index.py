@@ -81,6 +81,9 @@ def enemy_plane_crash(enemy, plane):
   else:
     return
 
+def game_over():
+  pass
+
 # 3-1 시작 화면 
 start = True
 start_image = Game_obj()
@@ -202,19 +205,22 @@ while shut_down==0:
     e = enemy_list[i]
     p = plane
     if enemy_plane_crash(e,p)=="gameover":
-      plane.put_img("./images/explosion.png")
-      plane.change_size(80,80)
-      plane.x = plane.x-20
-      plane.y = plane.y-20
-      plane.show()
+      plane_crash = Game_obj()
+      plane_crash.put_img("./images/explosion.png")
+      plane_crash.change_size(80,80)
+      plane_crash.x = plane.x-20
+      plane_crash.y = plane.y-20
+      plane_crash.show()
+      #Game Over Text
+      over_font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 50 )
+      text_Over = over_font.render("GAME OVER", True, colors["red"])  
+      screen.blit(text_Over, (50, size[1]/2-20))
       pygame.display.flip()
-      pygame.time.wait(3000) 
+      pygame.time.wait(3000)
       shut_down=1
       break
     else:
       pass
-      
-  
   # 4-5. 렌더링 
   pygame.display.flip()
 # 5. 게임 종료 
