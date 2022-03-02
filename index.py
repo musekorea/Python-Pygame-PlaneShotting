@@ -82,15 +82,14 @@ def enemy_plane_crash(enemy, plane):
     return
 
 # 3-1 시작 화면 
-start = 0
+start = True
 start_image = Game_obj()
 start_image.put_img("./images/codeme.png")
 start_image.change_size(300,300)
 start_image.x = 50
 start_image.y = 100
-start_image.show()
-while start==0:
-  clock.tick(60)
+
+while start==True:
   screen.fill(colors["black"])     
   start_image.show()
   font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20 )
@@ -104,10 +103,8 @@ while start==0:
       pygame.quit()
     if event.type == pygame.KEYDOWN:
       if event.key == 32: #space bar
-        print("ok") 
-        start=1
+        start=False
   pygame.display.flip()
-
 
 # 4. 메인 이벤트 
 shut_down = 0
